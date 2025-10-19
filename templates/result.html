@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Prediction Result</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <h1>Prediction Result</h1>
+    </header>
+
+    <section class="card">
+      <h2>Image</h2>
+      <img src="{{ image_url }}" alt="Uploaded image" class="preview">
+    </section>
+
+    <section class="card">
+      <h2>Prediction</h2>
+      <p><strong>Class:</strong> {{ predicted_class }}</p>
+      <p><strong>Confidence:</strong> {{ confidence }}%</p>
+      <a href="/" class="btn">Classify another</a>
+    </section>
+
+  </main>
+</body>
+</html>

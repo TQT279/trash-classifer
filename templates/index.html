@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Trash Classifier</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <h1>Trash Classifier</h1>
+      <p>Use AI to classify your waste — upload a photo or take one with your camera.</p>
+    </header>
+
+    <section class="card">
+      <h2>Upload Image</h2>
+      <form id="upload-form" action="/predict" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required>
+        <button type="submit" class="btn primary">Upload & Predict</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2>Or take a photo</h2>
+      <div class="camera-wrap" id="camera-wrap">
+        <div class="video-inner">
+          <video id="video" autoplay playsinline muted></video>
+          <canvas id="canvas" hidden></canvas>
+          <!-- Preview of taken photo (will match captured resolution scaled to container) -->
+          <img id="photo-preview" class="preview" hidden alt="Photo preview">
+        </div>
+      </div>
+      <div class="camera-actions">
+  <button id="start-camera" class="btn">Start Camera</button>
+  <button id="take-photo" class="btn primary" disabled>Take Photo</button>
+  <button id="clear-photo" class="btn" style="display:none">Clear Photo</button>
+      </div>
+      <form id="camera-form" action="/predict" method="post">
+        <input type="hidden" name="camera_image" id="camera_image">
+      </form>
+    </section>
+
+    <footer class="footer">
+      <small>Model: MobileNetV2 fine-tuned for trash classification</small>
+    </footer>
+  </main>
+
+  <script src="/static/js/camera.js"></script>
+</body>
+</html>
