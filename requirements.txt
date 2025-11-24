@@ -1,0 +1,15 @@
+﻿tensorflow==2.12 
+opencv-python 
+flask 
+pillow 
+numpy 
+pandas 
+scikit-learn 
+matplotlib 
+sqlalchemy 
+pyodbc 
+flask-cors 
+flask-sqlalchemy 
+python-dotenv 
+seaborn
+flask-jwt-extended

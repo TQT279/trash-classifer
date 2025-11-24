@@ -1,6 +1,6 @@
 dataset/
 venv/
 static/uploads/
-.env
 my sql.txt
 promt.txt
+.env

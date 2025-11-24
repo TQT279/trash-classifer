@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waste Classification System</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar" style="display: none;">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="material-icons">recycling</span>
+                <span>Waste Classifier</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#" class="nav-link" data-view="dashboard">
+                    <span class="material-icons">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-link" data-view="history">
+                    <span class="material-icons">history</span>
+                    <span>History</span>
+                </a>
+                <a href="#" class="nav-link" data-view="profile">
+                    <span class="material-icons">person</span>
+                    <span>Profile</span>
+                </a>
+                <button class="btn-text" id="logoutBtn">
+                    <span class="material-icons">logout</span>
+                    <span>Logout</span>
+                </button>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span class="material-icons">menu</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="main-container" id="mainContainer">
+        <!-- Login View -->
+        <div class="view" id="loginView">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <span class="material-icons auth-icon">recycling</span>
+                        <h1>Waste Classifier</h1>
+                        <p>Sign in to continue</p>
+                    </div>
+                    <form id="loginForm" class="auth-form">
+                        <div class="input-group">
+                            <input type="text" id="loginUsername" class="input-field" required>
+                            <label for="loginUsername" class="input-label">Username</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="loginPassword" class="input-field" required>
+                            <label for="loginPassword" class="input-label">Password</label>
+                        </div>
+                        <button type="submit" class="btn-primary btn-block">
+                            <span>Sign In</span>
+                        </button>
+                        <div class="auth-footer">
+                            <p>Don't have an account? <a href="#" id="showRegister">Sign up</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register View -->
+        <div class="view" id="registerView" style="display: none;">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <span class="material-icons auth-icon">recycling</span>
+                        <h1>Create Account</h1>
+                        <p>Sign up to get started</p>
+                    </div>
+                    <form id="registerForm" class="auth-form">
+                        <div class="input-group">
+                            <input type="text" id="registerUsername" class="input-field" required minlength="3">
+                            <label for="registerUsername" class="input-label">Username</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="registerEmail" class="input-field">
+                            <label for="registerEmail" class="input-label">Email (optional)</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="registerPassword" class="input-field" required minlength="6">
+                            <label for="registerPassword" class="input-label">Password</label>
+                        </div>
+                        <button type="submit" class="btn-primary btn-block">
+                            <span>Sign Up</span>
+                        </button>
+                        <div class="auth-footer">
+                            <p>Already have an account? <a href="#" id="showLogin">Sign in</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div class="view" id="dashboardView" style="display: none;">
+            <div class="container">
+                <h1 class="page-title">Waste Classification</h1>
+                <div class="upload-section">
+                    <div class="upload-card" id="uploadCard">
+                        <div class="upload-area" id="uploadArea">
+                            <span class="material-icons upload-icon">cloud_upload</span>
+                            <h3>Upload Waste Image</h3>
+                            <p>Drag and drop an image here, or click to select</p>
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                            <button class="btn-primary" id="selectImageBtn">
+                                <span>Select Image</span>
+                            </button>
+                        </div>
+                        <div class="image-preview" id="imagePreview" style="display: none;">
+                            <img id="previewImg" src="" alt="Preview">
+                            <button class="btn-icon" id="removeImageBtn">
+                                <span class="material-icons">close</span>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn-primary btn-large" id="classifyBtn" style="display: none;">
+                        <span class="material-icons">science</span>
+                        <span>Classify Waste</span>
+                    </button>
+                </div>
+
+                <div class="result-section" id="resultSection" style="display: none;">
+                    <div class="result-card">
+                        <h2>Classification Result</h2>
+                        <div class="result-content" id="resultContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History View -->
+        <div class="view" id="historyView" style="display: none;">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">Classification History</h1>
+                    <div class="filter-group">
+                        <select id="filterWasteType" class="input-field">
+                            <option value="">All Types</option>
+                        </select>
+                        <input type="text" id="searchInput" class="input-field" placeholder="Search...">
+                    </div>
+                </div>
+                <div class="history-list" id="historyList"></div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div class="view" id="profileView" style="display: none;">
+            <div class="container">
+                <h1 class="page-title">Profile</h1>
+                <div class="profile-grid">
+                    <div class="profile-card">
+                        <h2>User Information</h2>
+                        <form id="profileForm" class="profile-form">
+                            <div class="input-group">
+                                <input type="text" id="profileUsername" class="input-field" disabled>
+                                <label for="profileUsername" class="input-label">Username</label>
+                            </div>
+                            <div class="input-group">
+                                <input type="email" id="profileEmail" class="input-field">
+                                <label for="profileEmail" class="input-label">Email</label>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <span>Update Profile</span>
+                            </button>
+                        </form>
+                        <div class="profile-section">
+                            <h3>Change Password</h3>
+                            <form id="passwordForm" class="profile-form">
+                                <div class="input-group">
+                                    <input type="password" id="newPassword" class="input-field" required minlength="6">
+                                    <label for="newPassword" class="input-label">New Password</label>
+                                </div>
+                                <button type="submit" class="btn-primary">
+                                    <span>Change Password</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="stats-card">
+                        <h2>Statistics</h2>
+                        <div class="stats-content" id="statsContent">
+                            <div class="stat-item">
+                                <span class="material-icons">image</span>
+                                <div>
+                                    <div class="stat-value" id="statTotalImages">-</div>
+                                    <div class="stat-label">Total Images</div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="material-icons">science</span>
+                                <div>
+                                    <div class="stat-value" id="statTotalClassifications">-</div>
+                                    <div class="stat-label">Total Classifications</div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="material-icons">trending_up</span>
+                                <div>
+                                    <div class="stat-value" id="statAvgConfidence">-</div>
+                                    <div class="stat-label">Avg Confidence</div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="material-icons">feedback</span>
+                                <div>
+                                    <div class="stat-value" id="statTotalFeedbacks">-</div>
+                                    <div class="stat-label">Total Feedbacks</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stats-breakdown" id="statsBreakdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="spinner"></div>
+        <p id="loadingText">Loading...</p>
+    </div>
+
+    <!-- Snackbar -->
+    <div class="snackbar" id="snackbar"></div>
+
+    <!-- Modal Container -->
+    <div class="modal-overlay" id="modalOverlay" style="display: none;">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <button class="btn-icon" id="closeModal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <div class="modal-content" id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+
