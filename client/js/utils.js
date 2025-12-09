@@ -107,6 +107,8 @@ function truncate(text, maxLength) {
 // Get image URL from path (assuming images are served from uploads folder)
 function getImageUrl(imagePath) {
     if (!imagePath) return '';
+    // Normalize backslashes to forward slashes for Windows paths
+    imagePath = imagePath.replace(/\\/g, '/');
     // If it's already a full URL, return as is
     if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
         return imagePath;

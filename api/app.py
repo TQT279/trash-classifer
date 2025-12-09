@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from .config import config
@@ -133,6 +133,13 @@ def create_app(config_name=None):
             'version': '1.0.0'
         }), 200
     
+    # Serve uploaded files
+    @app.route('/uploads/<path:filename>', methods=['GET'])
+    def serve_uploads(filename):
+        upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
+        upload_folder_abs = os.path.abspath(upload_folder)
+        return send_from_directory(upload_folder_abs, filename)
+
     return app
 
 

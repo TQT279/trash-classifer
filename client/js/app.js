@@ -20,6 +20,10 @@ class WasteClassifierApp {
 
         this.setupEventListeners();
         this.loadWasteTypes();
+        // Initialize realtime controller (camera capture)
+        if (typeof realtimeController !== 'undefined') {
+            realtimeController.init();
+        }
     }
 
     setupEventListeners() {
@@ -112,6 +116,11 @@ class WasteClassifierApp {
             this.loadHistory();
         } else if (viewName === 'profile') {
             this.loadProfile();
+        }
+
+        // Stop camera when leaving dashboard to free resources
+        if (viewName !== 'dashboard' && typeof realtimeController !== 'undefined') {
+            realtimeController.stopCamera();
         }
     }
 
@@ -372,9 +381,14 @@ class WasteClassifierApp {
     }
 
     async loadHistory() {
+        const filterWasteType = document.getElementById('filterWasteType');
+        const searchInput = document.getElementById('searchInput');
+        const wasteType = filterWasteType ? filterWasteType.value : '';
+        const search = searchInput ? searchInput.value.trim() : '';
+
         showLoading('Loading history...');
         try {
-            const response = await api.getClassifications(this.currentPage, 20);
+            const response = await api.getClassifications(this.currentPage, 20, wasteType, search);
             hideLoading();
 
             if (response.success && response.data) {
