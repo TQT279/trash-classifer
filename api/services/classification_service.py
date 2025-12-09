@@ -32,6 +32,8 @@ class ClassificationService:
         self.index_to_class = None
         self.model_version = 'v1.0'
         self._model_loaded = False
+        # Default input size used during training; keep exported for reuse
+        self.input_size = (224, 224)
     
     def _ensure_model_loaded(self):
         """Ensure model is loaded (lazy loading)"""
@@ -42,9 +44,9 @@ class ClassificationService:
             from flask import has_app_context
             if not has_app_context():
                 raise Exception("Flask application context required")
-            # Get paths from config
-            model_path = current_app.config.get('MODEL_PATH', '../models/best_model.h5')
-            class_indices_path = current_app.config.get('CLASS_INDICES_PATH', '../models/class_indices.json')
+            # Get paths from config with sensible fallbacks to models_improved
+            model_path = current_app.config.get('MODEL_PATH', 'models_improved/waste_model_improved_v1.h5')
+            class_indices_path = current_app.config.get('CLASS_INDICES_PATH', 'models_improved/class_indices.json')
             
             # Convert relative paths to absolute if needed
             # Get project root (3 levels up from api/services/classification_service.py)
@@ -117,7 +119,7 @@ class ClassificationService:
                 img = img.convert('RGB')
             
             # Resize to model input size (typically 224x224 for most models)
-            img = img.resize((224, 224))
+            img = img.resize(self.input_size)
             
             # Convert to array and normalize
             img_array = np.array(img) / 255.0
@@ -185,6 +187,15 @@ class ClassificationService:
         self.class_indices = None
         self.index_to_class = None
         self._ensure_model_loaded()
+
+    def get_model_and_classes(self):
+        """
+        Ensure model is loaded and return model plus index->class mapping.
+        Returns:
+            tuple: (model, index_to_class)
+        """
+        self._ensure_model_loaded()
+        return self.model, self.index_to_class
 
 
 # Global instance

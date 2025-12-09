@@ -122,12 +122,51 @@ class APIClient {
         return data;
     }
 
-    async getClassifications(page = 1, perPage = 20) {
-        return this.request(`/classifications?page=${page}&per_page=${perPage}`);
+    async getClassifications(page = 1, perPage = 20, wasteType = '', search = '') {
+        const params = new URLSearchParams();
+        params.set('page', page);
+        params.set('per_page', perPage);
+        if (wasteType) params.set('waste_type', wasteType);
+        if (search) params.set('q', search);
+        return this.request(`/classifications?${params.toString()}`);
     }
 
     async getClassificationDetail(id) {
         return this.request(`/classifications/${id}`);
+    }
+
+    async realtimeCapture(imageBlob = null, deviceIndex = 0) {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            throw new Error('Not authenticated');
+        }
+
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        };
+
+        let body;
+        let url = `${this.baseURL}/realtime/capture`;
+
+        if (imageBlob) {
+            body = new FormData();
+            body.append('image', imageBlob, 'frame.jpg');
+        } else {
+            body = new FormData();
+            body.append('device_index', deviceIndex);
+        }
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers,
+            body
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error?.message || 'Realtime capture failed');
+        }
+        return data;
     }
 
     // Feedback endpoints

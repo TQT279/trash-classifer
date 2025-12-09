@@ -76,3 +76,16 @@ client/
 - JWT tokens are stored in localStorage
 - The app uses Material Design principles for a modern UI
 - Fully responsive for mobile and desktop
+
+## Real-time OpenCV Demo (Backend)
+
+- Requirements: `opencv-python`, `tensorflow`, and backend venv activated.
+- Quick start (from repo root):
+  - `python scripts/realtime_classifier.py --device 0`
+  - Press `q` to quit the preview window.
+- The script loads `models_improved/waste_model_improved_v1.h5` and `class_indices.json` by default. Override with `--model-path` / `--class-indices`.
+- Backend endpoint for server-side capture or uploaded frame:
+  - `POST /api/realtime/capture` (JWT required)
+  - Option A: no file → captures from webcam (optional `device_index` form/query param)
+  - Option B: multipart `image` file → classifies that frame
+  - Response: `{ success: true, data: { prediction: { waste_type, confidence_score, timestamp, all_predictions, processing_time_ms }}}`

@@ -36,19 +36,24 @@ def save_uploaded_file(file, upload_folder):
             file_ext = filename.rsplit('.', 1)[1].lower()
             unique_filename = f"{uuid.uuid4().hex}.{file_ext}"
             
-            # Ensure upload folder exists
-            os.makedirs(upload_folder, exist_ok=True)
+            # Ensure upload folder exists (use absolute path for storage)
+            upload_folder_abs = os.path.abspath(upload_folder)
+            os.makedirs(upload_folder_abs, exist_ok=True)
             
-            # Save file
-            file_path = os.path.join(upload_folder, unique_filename)
-            file.save(file_path)
+            # Save file to disk
+            abs_path = os.path.join(upload_folder_abs, unique_filename)
+            file.save(abs_path)
             
-            return file_path, filename
+            # Public path (relative for browser): uploads/<file>
+            public_root = os.path.basename(upload_folder_abs)
+            public_path = f"{public_root}/{unique_filename}".replace('\\', '/')
+            
+            return public_path, filename, abs_path
     except Exception as e:
         print(f"Error saving file: {str(e)}")
-        return None, None
+        return None, None, None
     
-    return None, None
+    return None, None, None
 
 
 def get_file_size(file_path):

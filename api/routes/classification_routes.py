@@ -1,12 +1,15 @@
 from flask import Blueprint, request, current_app
 from flask_jwt_extended import jwt_required
 from sqlalchemy import desc
+import cv2
+import numpy as np
 from ..models import db, Image, ClassificationResult, WasteType
 from ..utils import (
     error_response, success_response, get_current_user,
     save_uploaded_file, get_file_size, get_mime_type, paginate_query
 )
 from ..services.classification_service import classification_service
+from ..services.realtime_classifier import realtime_classifier
 
 classification_bp = Blueprint('classification', __name__, url_prefix='/api')
 
@@ -29,9 +32,9 @@ def classify_waste():
     
     # Save uploaded file
     upload_folder = current_app.config.get('UPLOAD_FOLDER', 'uploads')
-    file_path, original_name = save_uploaded_file(file, upload_folder)
+    public_path, original_name, abs_path = save_uploaded_file(file, upload_folder)
     
-    if not file_path:
+    if not public_path or not abs_path:
         return error_response("Failed to save file or invalid file type", 400)
     
     try:
@@ -41,7 +44,7 @@ def classify_waste():
         
         # Create image record
         image = Image(
-            image_path=file_path,
+            image_path=public_path,
             original_name=original_name,
             file_size=file_size,
             mime_type=mime_type,
@@ -52,7 +55,7 @@ def classify_waste():
         db.session.flush()  # Get image.id
         
         # Classify image
-        prediction_result = classification_service.predict(file_path)
+        prediction_result = classification_service.predict(abs_path)
         
         # Get or create waste type
         waste_type_name = prediction_result['waste_type']
@@ -97,21 +100,32 @@ def classify_waste():
 @classification_bp.route('/classifications', methods=['GET'])
 @jwt_required()
 def get_classifications():
-    """Get user's classification history"""
+    """Get user's classification history with optional filtering."""
     user = get_current_user()
     if not user:
         return error_response("User not found", 404)
     
     try:
-        # Get query parameters
+        # Query parameters
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 20, type=int)
+        waste_type = request.args.get('waste_type')
+        search = request.args.get('q')
         
-        # Query classifications through images uploaded by user
+        # Base query
         query = db.session.query(ClassificationResult)\
             .join(Image)\
-            .filter(Image.uploaded_by == user.id)\
-            .order_by(desc(ClassificationResult.classified_at))
+            .join(WasteType)\
+            .filter(Image.uploaded_by == user.id)
+        
+        if waste_type:
+            query = query.filter(WasteType.name.ilike(waste_type))
+        
+        if search:
+            like = f"%{search}%"
+            query = query.filter(Image.original_name.ilike(like))
+        
+        query = query.order_by(desc(ClassificationResult.classified_at))
         
         # Paginate
         pagination = paginate_query(query, page, per_page)
@@ -170,4 +184,38 @@ def get_classification_detail(classification_id):
     except Exception as e:
         current_app.logger.error(f"Error fetching classification: {str(e)}")
         return error_response("Failed to fetch classification", 500)
+
+
+@classification_bp.route('/realtime/capture', methods=['POST'])
+@jwt_required()
+def realtime_capture():
+    """Capture a webcam frame or use an uploaded frame for real-time prediction."""
+    user = get_current_user()
+    if not user:
+        return error_response("User not found", 404)
+
+    try:
+        # Optional: allow custom device index via form/json
+        device_index = request.form.get('device_index') or request.args.get('device_index')
+        device_index = int(device_index) if device_index is not None else 0
+
+        if 'image' in request.files:
+            file = request.files['image']
+            if not file or file.filename == '':
+                return error_response("No image file provided", 400)
+
+            file_bytes = file.read()
+            frame_array = np.frombuffer(file_bytes, np.uint8)
+            frame = cv2.imdecode(frame_array, cv2.IMREAD_COLOR)
+            if frame is None:
+                return error_response("Invalid image data", 400)
+
+            prediction = realtime_classifier.predict_frame(frame)
+        else:
+            prediction = realtime_classifier.capture_and_predict(device_index=device_index)
+
+        return success_response({'prediction': prediction})
+    except Exception as e:
+        current_app.logger.error(f"Realtime capture failed: {str(e)}")
+        return error_response(f"Realtime capture failed: {str(e)}", 500)
 

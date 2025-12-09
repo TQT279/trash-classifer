@@ -139,6 +139,39 @@
                         <div class="result-content" id="resultContent"></div>
                     </div>
                 </div>
+
+                <div class="upload-section">
+                    <div class="upload-card">
+                        <div class="upload-area">
+                            <span class="material-icons upload-icon">videocam</span>
+                            <h3>Live Camera Classification</h3>
+                            <p>Start your webcam, capture a frame, and classify instantly.</p>
+                            <div class="realtime-controls">
+                                <button class="btn-primary" id="startRealtime">
+                                    <span class="material-icons">play_arrow</span>
+                                    <span>Start Camera</span>
+                                </button>
+                                <button class="btn-text" id="stopRealtime" disabled>
+                                    <span class="material-icons">stop</span>
+                                    <span>Stop</span>
+                                </button>
+                                <button class="btn-primary" id="captureRealtime" disabled>
+                                    <span class="material-icons">camera_alt</span>
+                                    <span>Capture & Classify</span>
+                                </button>
+                            </div>
+                            <div class="realtime-preview">
+                                <video id="realtimeVideo" autoplay playsinline style="width: 100%; max-height: 320px; background: #000;"></video>
+                            </div>
+                            <div class="result-section" id="realtimeResultContainer">
+                                <div class="result-card">
+                                    <h3>Live Prediction</h3>
+                                    <div class="result-content" id="realtimeResult"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -258,6 +291,7 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/components.js"></script>
+    <script src="js/realtime.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
