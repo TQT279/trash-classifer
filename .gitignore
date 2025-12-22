@@ -1,6 +1,7 @@
 dataset/
 venv/
-static/uploads/
+uploads/
+api/__pycache__/
 my sql.txt
 promt.txt
 .env
