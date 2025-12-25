@@ -39,7 +39,7 @@ def classify_waste():
     
     try:
         # Get file info
-        file_size = get_file_size(file_path)
+        file_size = get_file_size(abs_path)
         mime_type = get_mime_type(original_name)
         
         # Create image record
