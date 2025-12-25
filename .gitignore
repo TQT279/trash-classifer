@@ -2,6 +2,8 @@ dataset/
 venv/
 uploads/
 api/__pycache__/
+api/routes/__pycache__/
+api/services/__pycache__/
 my sql.txt
 promt.txt
 .env
