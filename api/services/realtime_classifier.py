@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 from flask import current_app
 
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input  # type: ignore
 from .classification_service import classification_service
 
 
@@ -34,8 +35,12 @@ class RealtimeClassifier:
         # Resize to training input size
         target_size = classification_service.input_size
         resized = cv2.resize(rgb, target_size)
-        # Normalize to 0-1 and add batch dim
-        normalized = resized.astype("float32") / 255.0
+        # (# Normalize to 0-1 and add batch dim
+        # normalized = resized.astype("float32") / 255.0)
+        # Chuyển sang float để tính toán
+        img_array = resized.astype("float32")
+        # Dùng hàm của MobileNetV2 để đưa về [-1, 1]
+        normalized = preprocess_input(img_array)
         return np.expand_dims(normalized, axis=0)
 
     def predict_frame(self, frame):

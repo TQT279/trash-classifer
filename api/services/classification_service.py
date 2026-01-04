@@ -5,6 +5,8 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 from flask import current_app
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input # type: ignore
+from tensorflow.keras.preprocessing.image import img_to_array # type: ignore
 
 
 def focal_loss(gamma=1.0, alpha=0.25):
@@ -121,8 +123,14 @@ class ClassificationService:
             # Resize to model input size (typically 224x224 for most models)
             img = img.resize(self.input_size)
             
+            # (# Convert to array and normalize
+            # img_array = np.array(img) / 255.0)
+            
+            # Convert image to array
+            img_array = img_to_array(img)
+            
             # Convert to array and normalize
-            img_array = np.array(img) / 255.0
+            img_array = preprocess_input(img_array)
             
             # Add batch dimension
             img_array = np.expand_dims(img_array, axis=0)
