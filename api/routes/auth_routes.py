@@ -17,7 +17,8 @@ def register():
     data = request.get_json()
     username = data.get('username', '').strip()
     password = data.get('password', '')
-    email = data.get('email', '').strip() or None
+    email_val = data.get('email')
+    email = (email_val or '').strip() or None
     
     # Validate input
     if not username or len(username) < 3:
